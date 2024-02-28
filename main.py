@@ -43,7 +43,26 @@ def load_dataset(dataset_name:str) -> tuple(int, list[torch.utils.data.Dataset])
 			transforms.RandomHorizontalFlip()
 		])
 
-		train_dataset = torch
+		train_dataset = torchvision.datasets.CelebA(root=data_path, split="train", transform=transform, download=True)
+		test_dataset = torchvision.datasets.CelebA(root=data_path, split="test", transform=transform, download=True)
+		dataset_list.append(train_dataset)
+		dataset_list.append(test_dataset)
+
+	elif dataset_name == "Kitti":
+		data_dimension = 256
+		transform = transforms.Compose([
+			transforms.ToTensor(),
+			transforms.CenterCrop([256, 256]),
+			transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+			transforms.RandomHorizontalFlip()
+		])
+
+		train_dataset = torchvision.datasets.Kitti(root=data_path, train=True, transform=transform, download=True)
+		test_dataset = torchvision.datasets.Kitti(root=data_path, train=False, transform=transform, download=True)
+		dataset_list.append(train_dataset)
+		dataset_list.append(test_dataset)
+
+
 
 	return data_dimension, dataset_list	
 
