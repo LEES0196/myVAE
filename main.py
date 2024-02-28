@@ -9,18 +9,23 @@ from tqdm import tqdm
 
 def main() -> None:
 	args = sys.argv
-	try: 
-		dataset_name = args[1]
-	except:
-		dataset_name = ""
+	dataset_name, [hidden_dim, latent_dim] = GetUserInput()
+	dimension_size, [train_ds, test_ds] = load_dataset(dataset_name)
+	train_loader = DataLoader(dataset=train_ds, batch_size=64, shuffle=True, num_workers=2)
+	test_loader = DataLoader(dataset=test_ds, batch_size=64, shuffle=True, num_workers=2)
 
-	[train_ds, test_ds] = load_dataset(dataset_name)
-	
 	
 
-def load_dataset(dataset_name:str) -> tuple(int, list[torch.utils.data.Dataset]):
+
+	
+	
+'''
+LOADING DATASET GIVEN INPUT DATASET NAME
+INPUT:	Dataset name in string type
+OUTPUT:	Dimension for training of dataset, List of dataset in order of [train, test]
+'''
+def load_dataset(dataset_name="CIFAR-10":str) -> tuple(int, list[torch.utils.data.Dataset]):
 	dataset_list = []
-
 	if dataset_name == "CIFAR-10":
 		data_dimension = 32
 		transform = transforms.Compose([
@@ -66,7 +71,19 @@ def load_dataset(dataset_name:str) -> tuple(int, list[torch.utils.data.Dataset])
 
 	return data_dimension, dataset_list	
 
-		
+'''
+KL Divergence loss between the distribution estimated mean and variance 
+'''
+def KLD_Loss(mean: torch.tensor, log_var: torch.tensor) -> torch.tensor:
+	KLD = -0.5* torch.sum(1 + log_var - mean.pow(2) - log_var.exp())
+	return KLD
+
+'''
+Reconstruction loss using input tensor and generated image tensor
+'''
+def Rec_Loss(x: torch.tensor, x_hat: torch.tensor) -> torch.tensor:
+	L_rec = nn.functional.binary_cross_entropy(x_hat, x, reduction='sum')
+	return L_rec
 	
 
 if __name__ == "__main__":

@@ -24,7 +24,7 @@ class Encoder(nn.Module):
 		self.mean = nn.Linear(hidden_dim, latent_dim)
 		self.var = nn.Linear(hidden_dim, latent_dim)
 
-	def forward(self, x:torch.tensor) -> torch.tensor:
+	def forward(self, x:torch.tensor) -> tuple(torch.tensor, torch.tensor):
 		print(x.shape)
 		x = self.CNN(x)
 		x = self.flatten(x)
@@ -86,9 +86,4 @@ if __name__ == "__main__":
 	encoder = Encoder(input_dim, hidden_dim, latent_dim)
 	decoder = Decoder(latent_dim, hidden_dim, input_dim)
 	model = Model(encoder, decoder)
-
-	from torchsummary import summary
-	summary(model, (3, 256, 256))
-
-	print(device)
 
